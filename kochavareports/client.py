@@ -2,10 +2,10 @@ import requests
 import json
 import time
 
-from kochavareports.constant import ReportCategory
-from kochavareports import exception
-from kochavareports import request as client_request
-from kochavareports import response as client_response
+from .constant import ReportCategory
+from . import exception
+from . import request as client_request
+from . import response as client_response
 
 
 API_VERSION = 'v1.2'
