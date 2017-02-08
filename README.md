@@ -35,19 +35,19 @@ print token
 
 ```time_start``` and ```time_end``` parameters can be ISO formatted strings, datetime objects or timestamps: they are converted internally to a timestamp, as required by the API.
 
-If you want a Detail report instead of a Summary report (default), you can add an additional parameter ```reportCategory='detail'```.
-
 More report parameters and usage examples can be found here:
 
 [Requesting and Scheduling Reports](https://support.kochava.com/analytics-reports-api/api-v1-2-requesting-and-scheduling-reports)
 
 [Call Structure](https://support.kochava.com/analytics-reports-api/api-v1-2-call-structure)
 
+If you want a Detail report instead of a Summary report (default), you can add an additional parameter ```reportCategory='detail'```.
+
 The returned token can be used to check the report progress and read the report data, as seen below.
 
 # Getting the report progress and read it:
 
-Once a report has been queued you can check it's progress. If it's completed you can read the report data:
+Once a report has been queued you can check it's progress at any time. If it's completed you can read the report data:
 
 ```python
 response = client.get_report_progress(token)
