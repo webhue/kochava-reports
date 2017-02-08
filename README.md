@@ -47,7 +47,7 @@ The returned token can be used to check the report progress and read the report 
 
 # Getting the report progress and read it:
 
-Once a report has been queued, you can check it's progress. If it's completed you can read the report data:
+Once a report has been queued you can check it's progress. If it's completed you can read the report data:
 
 ```python
 response = client.get_report_progress(token)
@@ -77,17 +77,16 @@ print result
 
 ```max_retries``` parameter (30, by default) is used to avoid infinite loop issues or possible rate-limiting issues. If you expect the report to take a long time to be completed you can set ```start_delay_seconds``` to a higher value.
 
-If the ```max_retries``` limit has been reached, an ```kochavareports.exception.PollMaxRetryException``` will be raised.
+If the ```max_retries``` limit has been reached a ```kochavareports.exception.PollMaxRetryException``` will be raised.
 
 # Misc
 
-When making calls, you should generally check for ```kochavareports.exception.HttpException```, which will wrap a ```requests.exceptions.RequestException``` adding some utility methods. All other exceptions extend the ```ApiException``` base class.
+When making calls, you should generally check for ```kochavareports.exception.HttpException```, which will wrap around a ```requests.exceptions.RequestException``` adding some utility methods. All other exceptions extend the ```ApiException``` base class.
 
 # License
 
 MIT. 'nuff said.
 
 # TODO
-
 	- Unit tests.
 
