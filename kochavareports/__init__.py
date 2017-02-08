@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from .constant import ReportCategory, ReportType
+from .constant import ReportCategory, Traffic
 from .exception import (
     HttpException, ApiException, ApiResponseException,
     ApiResponseException, ApiCredentialsException

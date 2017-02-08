@@ -16,17 +16,26 @@ client = KochavaClient(credentials)
 Creating a one-time report is easy:
 
 ```python
-time_start = "2017-01-25"
-time_end = "2017-02-07"
-traffic = ['click', 'install']
-traffic_grouping = ['network', 'campaign']
-time_series = '1'
-token = client.create_report(time_start=time_start, time_end=time_end,
-                             traffic=traffic,
-                             traffic_grouping=traffic_grouping,
-                             time_series=time_series)
+request_data = {
+	'time_start': '2017-01-25',
+	'time_end': '2017-02-07',
+	'traffic': [
+		'click',
+		'install'
+	],
+	'traffic_grouping': [
+		'network',
+		'campaign'
+	],
+	'time_series': '1'
+}
+token = client.create_report(**request_data)
 print token
 ```
+
+```time_start``` and ```time_end``` parameters can be ISO formatted strings, datetime objects or timestamps: they are converted internally to a timestamp, as required by the API.
+
+If you want a Detail report instead of a Summary report (default), you can add an additional parameter ```reportCategory='detail'```.
 
 More report parameters and usage examples can be found here:
 
@@ -38,7 +47,7 @@ The returned token can be used to check the report progress and read the report 
 
 # Getting the report progress and read it:
 
-Once a report has been queued, you can check it's progress. If it's completed, you can finally read the report data:
+Once a report has been queued, you can check it's progress. If it's completed you can read the report data:
 
 ```python
 response = client.get_report_progress(token)
@@ -51,7 +60,7 @@ else:
 
 # Polling until the report is completed:
 
-If you don't have complex code and you are happy waiting until the report is completed, you can use this code which does some basic polling:
+If you don't have complex code and you are happy waiting until the report is completed you can use this code which does some basic polling:
 
 ```python
 result = client.poll_report(token)
