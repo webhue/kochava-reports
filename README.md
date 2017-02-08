@@ -1,4 +1,4 @@
-# kochava-reports
+# Kochava Reports
 Python library to request and query reports in the Kochava platform. It can be used to generate reports and query for some metadata. The implemented functionality is not exhaustive and is focused on generating reports. Scheduling reports is currently not possible.
 
 # Creating the client:
@@ -29,7 +29,9 @@ print token
 ```
 
 More report parameters and usage examples can be found here:
+
 [Requesting and Scheduling Reports](https://support.kochava.com/analytics-reports-api/api-v1-2-requesting-and-scheduling-reports)
+
 [Call Structure](https://support.kochava.com/analytics-reports-api/api-v1-2-call-structure)
 
 The returned token can be used to check the report progress and read the report data, as seen below.
