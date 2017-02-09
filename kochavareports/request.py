@@ -35,8 +35,9 @@ class CreateReportRequest(AuthRequest):
         data.update({
             'time_start': str(time_start),
             'time_end': str(time_end),
+            'time_series': kwargs.get('time_series', '1'),
             'delivery_method': [
-                "S3link"
+                "S3link",
             ],
             "delivery_format": "json",
         })
