@@ -58,6 +58,10 @@ else:
     print response.progress
 ```
 
+See here a list of reports fields:
+
+[Reports Overview](https://support.kochava.com/analytics-reports-api/reports-overview)
+
 # Polling until the report is completed:
 
 If you don't have complex code and you are happy waiting until the report is completed you can use this code which does some basic polling:

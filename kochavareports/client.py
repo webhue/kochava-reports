@@ -146,6 +146,5 @@ class Client(object):
             if response.is_completed():
                 return self.read_report(response.get_report_url())
             time.sleep(retry_interval_seconds)
-            print x
         raise exception.PollMaxRetryException(
             'Max retry reached while polling request:' + str(max_retries))
