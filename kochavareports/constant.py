@@ -13,3 +13,10 @@ class Traffic(object):
     INFLUENCER_IMPRESSION = 'influencer_imp'
     INFLUENCER_CLICK = 'influencer_click'
     FRACTIONAL = 'fractional'
+
+
+class DateTimeGranularity(object):
+    HOURLY = '1'
+    DAILY = '24'
+    WEEKLY = '168'
+    MONTHLY = '720'

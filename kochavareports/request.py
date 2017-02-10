@@ -24,8 +24,10 @@ class GetReportColumnsRequest(AuthRequest):
 
 class CreateReportRequest(AuthRequest):
     def __init__(self, credentials=None, reportCategory=None, **kwargs):
-        time_start = util.get_timestamp(kwargs.get('time_start'))
-        time_end = util.get_timestamp(kwargs.get('time_end'))
+        time_start = util.get_timestamp(kwargs.get('time_start'),
+                                        kwargs.get('time_zone', None))
+        time_end = util.get_timestamp(kwargs.get('time_end'),
+                                      kwargs.get('time_zone', None))
         if time_end < time_start:
             time_start, time_end = time_end, time_start
 

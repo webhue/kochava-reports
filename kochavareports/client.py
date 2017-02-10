@@ -3,7 +3,10 @@ import json
 import time
 
 from .constant import ReportCategory
-from . import exception
+from .exception import (
+    HttpException, ApiException, ApiResponseException,
+    ApiResponseException
+)
 from . import request as client_request
 from . import response as client_response
 
@@ -77,9 +80,9 @@ class Client(object):
             r.raise_for_status()
             return r.json()
         except requests.exceptions.RequestException as e:
-            raise exception.HttpException(e)
+            raise HttpException(e)
         except ValueError:
-            raise exception.ApiException("Empty data returned by Kochava.")
+            raise ApiException("Empty data returned by Kochava.")
 
     def _post_data(self, url, data):
         try:
@@ -87,9 +90,9 @@ class Client(object):
             r.raise_for_status()
             return r.json()
         except requests.exceptions.RequestException as e:
-            raise exception.HttpException(e)
+            raise HttpException(e)
         except ValueError:
-            raise exception.ApiException("Empty data returned by Kochava.")
+            raise ApiException("Empty data returned by Kochava.")
 
     def get_valid_grouping_fields(self):
         data = self._get_data(API_ENDPOINT + RequestEndpoint.GROUPING_FIELDS)
@@ -146,5 +149,5 @@ class Client(object):
             if response.is_completed():
                 return self.read_report(response.get_report_url())
             time.sleep(retry_interval_seconds)
-        raise exception.PollMaxRetryException(
+        raise PollMaxRetryException(
             'Max retry reached while polling request:' + str(max_retries))
