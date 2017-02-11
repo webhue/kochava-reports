@@ -3,6 +3,11 @@ class ReportCategory(object):
     DETAIL = 'detail'
 
 
+class SummaryReportType(object):
+    NETWORK = 'network'
+    CAMPAIGN = 'campaign'
+
+
 class Traffic(object):
     CLICK = 'click'
     IMPRESSION = 'impression'

@@ -32,6 +32,18 @@ class Credentials(object):
         self.api_key = api_key
         self.app_guid = app_guid
 
+    def __str__(self):
+        return str(self.__dict__)
+
+    def __unicode__(self):
+        return unicode(self.__dict__)
+
+    def __repr__(self):
+        return 'KochavaCredentials(**' + str(self.__dict__) + ')'
+
+    def to_dict(self):
+        return self.__dict__
+
 
 class Client(object):
     """
@@ -121,6 +133,10 @@ class Client(object):
                                request.data)
         response = client_response.GetTemplatesResponse(data)
         return response.get_template_values()
+
+    def get_apps(self):
+        return self._post_data(API_ENDPOINT + RequestEndpoint.APPS,
+                               self.credentials.to_dict())
 
     def create_report(self, reportCategory=ReportCategory.SUMMARY, **kwargs):
         request = client_request.CreateReportRequest(self.credentials,

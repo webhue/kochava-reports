@@ -14,7 +14,7 @@ class AuthRequest(Request):
     def __init__(self, credentials, **kwargs):
         Request.__init__(self, **kwargs)
         if credentials:
-            self.data.update(credentials.__dict__)
+            self.data.update(credentials.to_dict())
 
 
 class GetReportColumnsRequest(AuthRequest):
