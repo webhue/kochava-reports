@@ -109,22 +109,22 @@ class Client(object):
     def get_valid_grouping_fields(self):
         data = self._get_data(API_ENDPOINT + RequestEndpoint.GROUPING_FIELDS)
         response = client_response.GetValidFieldsResponse(data)
-        return response.get_valid_fields()
+        return response.valid_fields
 
     def get_valid_filtering_fields(self):
         data = self._get_data(API_ENDPOINT + RequestEndpoint.FILTERING_FIELDS)
         response = client_response.GetValidFieldsResponse(data)
-        return response.get_valid_fields()
+        return response.valid_fields
 
     def get_valid_timezones(self):
         data = self._get_data(API_ENDPOINT + RequestEndpoint.TIMEZONES)
         response = client_response.GetValidFieldsResponse(data)
-        return response.get_valid_fields()
+        return response.valid_fields
 
     def get_report_templates(self):
         data = self._get_data(API_ENDPOINT + RequestEndpoint.REPORT_TEMPLATES)
         response = client_response.GetTemplatesResponse(data)
-        return response.get_template_values()
+        return response.template_values
 
     def get_report_columns(self, traffic):
         request = client_request.GetReportColumnsRequest(self.credentials,
@@ -132,7 +132,7 @@ class Client(object):
         data = self._post_data(API_ENDPOINT + RequestEndpoint.REPORT_COLUMNS,
                                request.data)
         response = client_response.GetTemplatesResponse(data)
-        return response.get_template_values()
+        return response.template_values
 
     def get_apps(self):
         return self._post_data(API_ENDPOINT + RequestEndpoint.APPS,
@@ -144,7 +144,7 @@ class Client(object):
                                                      **kwargs)
         data = self._post_data(API_ENDPOINT + request.reportCategory, request.data)
         response = client_response.CreateReportResponse(data)
-        return response.get_report_token()
+        return response.report_token
 
     def get_report_progress(self, token):
         request = client_request.GetReportProgressRequest(self.credentials,
