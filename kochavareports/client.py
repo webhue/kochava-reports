@@ -142,7 +142,7 @@ class Client(object):
         request = client_request.CreateReportRequest(self.credentials,
                                                      reportCategory,
                                                      **kwargs)
-        data = self._post_data(API_ENDPOINT + reportCategory, request.data)
+        data = self._post_data(API_ENDPOINT + request.reportCategory, request.data)
         response = client_response.CreateReportResponse(data)
         return response.get_report_token()
 

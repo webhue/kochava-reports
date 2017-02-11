@@ -1,6 +1,7 @@
 import copy
 
 from . import util
+from .constant import DateTimeGranularity
 
 
 class Request(object):
@@ -23,21 +24,34 @@ class GetReportColumnsRequest(AuthRequest):
 
 
 class CreateReportRequest(AuthRequest):
+    reportCategory = None
+
     def __init__(self, credentials=None, reportCategory=None, **kwargs):
-        time_start = util.get_timestamp(kwargs.get('time_start'),
-                                        kwargs.get('time_zone', None))
-        time_end = util.get_timestamp(kwargs.get('time_end'),
-                                      kwargs.get('time_zone', None))
+        if not reportCategory:
+            raise ValueError("Missing report category parameter (summary or detail)")
+
+        self.reportCategory = reportCategory
+
+        time_start = kwargs.get('time_start')
+        time_end = kwargs.get('time_end')
+        time_zone = kwargs.get('time_zone')
+        if not time_start and not time_end:
+            raise ValueError("Missing time_start and/or time_end parameters")
+
+        time_start = util.get_timestamp(time_start, time_zone)
+        time_end = util.get_timestamp(time_end, time_zone)
+
         if time_end < time_start:
             time_start, time_end = time_end, time_start
 
-        # reportCategory is ignored
+        if not kwargs.get('traffic'):
+            raise ValueError("Missing traffic parameters")
 
         data = copy.deepcopy(kwargs)
         data.update({
             'time_start': str(time_start),
             'time_end': str(time_end),
-            'time_series': kwargs.get('time_series', '1'),
+            'time_series': kwargs.get('time_series', DateTimeGranularity.HOURLY),
             'delivery_method': [
                 "S3link",
             ],
