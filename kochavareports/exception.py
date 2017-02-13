@@ -8,6 +8,7 @@ class HttpException(Exception):
 
     def is_connection_error(self):
         return isinstance(self.httpException, (
+            requests.exceptions.ConnectionError,
             requests.exceptions.Timeout,
             requests.exceptions.SSLError))
 

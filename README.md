@@ -90,8 +90,3 @@ When making calls, you should generally check for ```kochavareports.exception.Ht
 # License
 
 MIT. 'nuff said.
-
-# TODO
-
- - Unit tests.
-

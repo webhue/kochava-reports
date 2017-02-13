@@ -44,7 +44,7 @@ class GetTemplatesResponse(Response):
     def validate(self):
         super(GetTemplatesResponse, self).validate()
         if not self.template_values:
-            raise ValueError("Templates values are missing")
+            raise ValueError("Template values are missing")
 
 
 class CreateReportResponse(Response):

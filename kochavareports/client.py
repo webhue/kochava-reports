@@ -5,26 +5,11 @@ import time
 from .constant import ReportCategory
 from .exception import (
     HttpException, ApiException, ApiResponseException,
-    ApiResponseException
+    ApiResponseException,
+    PollMaxRetryException
 )
 from . import request as client_request
 from . import response as client_response
-
-
-API_VERSION = 'v1.2'
-API_ENDPOINT = 'https://reporting.api.kochava.com/' + API_VERSION + '/'
-
-
-class RequestEndpoint(object):
-    GROUPING_FIELDS = 'grouping'
-    FILTERING_FIELDS = 'filtering'
-    TIMEZONES = 'timezones'
-    REPORT_TEMPLATES = 'templates'
-    APPS = 'getapps'
-    SCHEDULE_REPORT = 'schedule'
-    REPORT_TOKENS = 'tokens'
-    REPORT_COLUMNS = 'reportcolumns'
-    REPORT_PROGRESS = 'progress'
 
 
 class Credentials(object):
@@ -43,6 +28,21 @@ class Credentials(object):
 
     def to_dict(self):
         return self.__dict__
+
+DEFAULT_API_VERSION = 'v1.2'
+API_ENDPOINT = 'https://reporting.api.kochava.com/'
+
+
+class RequestEndpoint(object):
+    GROUPING_FIELDS = 'grouping'
+    FILTERING_FIELDS = 'filtering'
+    TIMEZONES = 'timezones'
+    REPORT_TEMPLATES = 'templates'
+    APPS = 'getapps'
+    SCHEDULE_REPORT = 'schedule'
+    REPORT_TOKENS = 'tokens'
+    REPORT_COLUMNS = 'reportcolumns'
+    REPORT_PROGRESS = 'progress'
 
 
 class Client(object):
@@ -83,8 +83,12 @@ class Client(object):
                                     start_delay_seconds=15, max_retries=30)
         print result
     """
-    def __init__(self, credentials=None):
+    def __init__(self, credentials=None, api_version=DEFAULT_API_VERSION):
         self.credentials = credentials
+        self.api_version = api_version
+
+    def _get_url(self, endpoint):
+        return API_ENDPOINT + self.api_version + '/' + endpoint
 
     def _get_data(self, url):
         try:
@@ -96,7 +100,7 @@ class Client(object):
         except ValueError:
             raise ApiException("Empty data returned by Kochava.")
 
-    def _post_data(self, url, data):
+    def _post_data(self, url, data={}):
         try:
             r = requests.post(url, data=json.dumps(data))
             r.raise_for_status()
@@ -107,50 +111,55 @@ class Client(object):
             raise ApiException("Empty data returned by Kochava.")
 
     def get_valid_grouping_fields(self):
-        data = self._get_data(API_ENDPOINT + RequestEndpoint.GROUPING_FIELDS)
+        url = self._get_url(RequestEndpoint.GROUPING_FIELDS)
+        data = self._get_data(url)
         response = client_response.GetValidFieldsResponse(data)
         return response.valid_fields
 
     def get_valid_filtering_fields(self):
-        data = self._get_data(API_ENDPOINT + RequestEndpoint.FILTERING_FIELDS)
+        url = self._get_url(RequestEndpoint.FILTERING_FIELDS)
+        data = self._get_data(url)
         response = client_response.GetValidFieldsResponse(data)
         return response.valid_fields
 
     def get_valid_timezones(self):
-        data = self._get_data(API_ENDPOINT + RequestEndpoint.TIMEZONES)
+        url = self._get_url(RequestEndpoint.TIMEZONES)
+        data = self._get_data(url)
         response = client_response.GetValidFieldsResponse(data)
         return response.valid_fields
 
     def get_report_templates(self):
-        data = self._get_data(API_ENDPOINT + RequestEndpoint.REPORT_TEMPLATES)
+        url = self._get_url(RequestEndpoint.REPORT_TEMPLATES)
+        data = self._get_data(url)
         response = client_response.GetTemplatesResponse(data)
         return response.template_values
 
     def get_report_columns(self, traffic):
+        url = self._get_url(RequestEndpoint.REPORT_COLUMNS)
         request = client_request.GetReportColumnsRequest(self.credentials,
                                                          traffic)
-        data = self._post_data(API_ENDPOINT + RequestEndpoint.REPORT_COLUMNS,
-                               request.data)
+        data = self._post_data(url, request.data)
         response = client_response.GetTemplatesResponse(data)
         return response.template_values
 
     def get_apps(self):
-        return self._post_data(API_ENDPOINT + RequestEndpoint.APPS,
-                               self.credentials.to_dict())
+        url = self._get_url(RequestEndpoint.APPS)
+        return self._post_data(url, self.credentials.to_dict())
 
     def create_report(self, reportCategory=ReportCategory.SUMMARY, **kwargs):
         request = client_request.CreateReportRequest(self.credentials,
                                                      reportCategory,
                                                      **kwargs)
-        data = self._post_data(API_ENDPOINT + request.reportCategory, request.data)
+        url = self._get_url(request.reportCategory)
+        data = self._post_data(url, request.data)
         response = client_response.CreateReportResponse(data)
         return response.report_token
 
     def get_report_progress(self, token):
         request = client_request.GetReportProgressRequest(self.credentials,
                                                           token=token)
-        data = self._post_data(API_ENDPOINT + RequestEndpoint.REPORT_PROGRESS,
-                               request.data)
+        url = self._get_url(RequestEndpoint.REPORT_PROGRESS)
+        data = self._post_data(url, request.data)
         return client_response.GetReportProgressResponse(data)
 
     def read_report(self, url):
@@ -164,6 +173,7 @@ class Client(object):
             response = self.get_report_progress(token)
             if response.is_completed():
                 return self.read_report(response.get_report_url())
-            time.sleep(retry_interval_seconds)
+            if retry_interval_seconds:
+                time.sleep(retry_interval_seconds)
         raise PollMaxRetryException(
             'Max retry reached while polling request:' + str(max_retries))

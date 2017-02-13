@@ -1,36 +1,148 @@
 from __future__ import absolute_import
 
 import unittest2
-import datetime
 
-from mock import patch
+import requests
+import json
+import mock
 
-from kochavareports import response, constant, exception
+from kochavareports import client, constant, exception, response
+
+from kochavareports import KochavaCredentials, KochavaClient
 
 
 class TestClient(unittest2.TestCase):
 
-    def test_response(self):
-        pass
+    TEST_URL = 'http://whatever.url'
+    TEST_DATA = {
+        'dummy': 'whatever'
+    }
 
-    # @patch('pynsights.tasks.s3_upload._get_file_io')
-    # @patch('pynsights.tasks.s3_upload.extract_and_upload')
-    # def test_refresh_data_sources_called(self, mock_extract_and_upload,
-    #                                      mock_get_file_io):
-    #     # It does not matter what mock_get_file_io returns, as long as it's not
-    #     # None
-    #     data_source_id = 'test_datasource'
+    def _make_credentials(self):
+        return KochavaCredentials(api_key='api key',
+                                  app_guid='app guid')
 
-    #     mock_get_file_io.return_value = object()
-    #     mock_extract_and_upload.return_value = [data_source_id]
+    def _make_client(self):
+        return KochavaClient(self._make_credentials())
 
-    #     self._create_caching_key(PROVIDER, PROVIDER)
-    #     self._create_caching_key(PROVIDER, QUERY_COLLECTION)
+    @mock.patch('kochavareports.client.requests.get')
+    def test_get_http_error(self, mock_get):
+        mock_response = mock.Mock()
+        http_error = requests.exceptions.RequestException()
+        mock_response.raise_for_status.side_effect = http_error
+        mock_get.return_value = mock_response
+        with self.assertRaises(exception.HttpException):
+            self._make_client()._get_data(self.TEST_URL)
 
-    #     _import_csv_data_from_s3('bucket', 'users/foo-bar')
+        mock_get.assert_called_once_with(self.TEST_URL)
+        self.assertEqual(1, mock_response.raise_for_status.call_count)
+        self.assertEqual(0, mock_response.json.call_count)
 
-    #     query_cache = Caching.get(QUERY_COLLECTION, CACHE_KEY)
-    #     provider_cache = Caching.get(PROVIDER, CACHE_KEY)
+    @mock.patch('kochavareports.client.requests.post')
+    def test_post_http_error(self, mock_post):
+        mock_response = mock.Mock()
+        http_error = requests.exceptions.RequestException()
+        mock_response.raise_for_status.side_effect = http_error
+        mock_post.return_value = mock_response
+        with self.assertRaises(exception.HttpException):
+            self._make_client()._post_data(self.TEST_URL, self.TEST_DATA)
 
-    #     self.assertEqual(query_cache, None)
-    #     self.assertEqual(provider_cache, None)
+        mock_post.assert_called_once_with(self.TEST_URL,
+                                          data=json.dumps(self.TEST_DATA))
+        self.assertEqual(1, mock_response.raise_for_status.call_count)
+        self.assertEqual(0, mock_response.json.call_count)
+
+    @mock.patch('kochavareports.client.requests.get')
+    def test_get_json_error(self, mock_get):
+        mock_response = mock.Mock()
+        mock_response.return_value = ''
+        mock_response.json.side_effect = ValueError()
+        mock_get.return_value = mock_response
+        with self.assertRaises(exception.ApiException):
+            self._make_client()._get_data(self.TEST_URL)
+        self.assertEqual(1, mock_response.json.call_count)
+
+    @mock.patch('kochavareports.client.requests.post')
+    def test_post_json_error(self, mock_post):
+        mock_response = mock.Mock()
+        mock_response.return_value = ''
+        mock_response.json.side_effect = ValueError()
+        mock_post.return_value = mock_response
+        with self.assertRaises(exception.ApiException):
+            self._make_client()._post_data(self.TEST_URL, self.TEST_DATA)
+        self.assertEqual(1, mock_response.json.call_count)
+
+    @mock.patch('kochavareports.client.time.sleep')
+    @mock.patch('kochavareports.client.requests.post')
+    @mock.patch('kochavareports.client.Client.get_report_progress')
+    def test_poll_report_max_retries_exceeded(self, mock_progress, mock_post,
+                                              mock_sleep):
+        response_data = {
+            'status': 'queued'
+        }
+        mock_response = mock.Mock()
+        mock_response.json.return_value = response_data
+        mock_post.return_value = mock_response
+        mock_progress.return_value = response.GetReportProgressResponse(
+                                                response_data)
+        token = '12345667'
+        retry_interval_seconds = 3
+        start_delay_seconds = 15
+        max_retries = 60
+
+        with self.assertRaises(exception.PollMaxRetryException):
+            self._make_client().poll_report(
+                token,
+                retry_interval_seconds=retry_interval_seconds,
+                start_delay_seconds=start_delay_seconds,
+                max_retries=max_retries)
+
+        # checking time.sleep() calls would verify that all input parameters
+        # are used correctly:
+        sleep_calls = [mock.call(start_delay_seconds)] + \
+                      [mock.call(retry_interval_seconds)] * max_retries
+        self.assertEqual(sleep_calls, mock_sleep.call_args_list)
+
+        # finally, check that get_report_progress() is called
+        # `max_retries` times with the token parameter:
+        progress_calls = [mock.call(token)] * max_retries
+        self.assertEqual(progress_calls, mock_progress.call_args_list)
+
+    @mock.patch('kochavareports.client.time.sleep')
+    @mock.patch('kochavareports.client.Client.read_report')
+    @mock.patch('kochavareports.client.Client.get_report_progress')
+    def test_poll_report_success(self, mock_progress, mock_read, mock_sleep):
+        token = '1234456765'
+        response_queued = {
+            'status': 'queued'
+        }
+        response_completed = {
+            'status': 'completed',
+            'report': 'http://some.url/whatever'
+        }
+        response_result = {
+            'click_count': 10,
+            'install_count': 2,
+        }
+
+        ping_times = 3  # for testing purposes it should be lower than
+        # `max_retries`, which defaults 60 in this test
+
+        mock_progress.side_effect = \
+            [response.GetReportProgressResponse(response_queued)] * ping_times + \
+            [response.GetReportProgressResponse(response_completed)]
+        mock_read.return_value = response_result
+
+        result = self._make_client().poll_report(token)
+
+        # read_report() result should be the same as poll_report result:
+        self.assertEqual(result, response_result)
+
+        # read_report() should be called exactly once with the returned url:
+        mock_read.assert_called_once_with(response_completed['report'])
+
+        # get_report_progress() should be called internally exactly like
+        # specified here: just the token, (ping_times + 1) times in total,
+        # in the specified order
+        progress_calls = [mock.call(token)] * (ping_times + 1)
+        self.assertEqual(progress_calls, mock_progress.call_args_list)

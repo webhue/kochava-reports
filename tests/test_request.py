@@ -37,8 +37,8 @@ class TestRequest(unittest2.TestCase):
         reportCategory = constant.ReportCategory.SUMMARY
         empty_data = {}
         missing_traffic_data = {
-            'time_start':'2017-01-01',
-            'time_end':'2017-02-01'
+            'time_start': '2017-01-01',
+            'time_end': '2017-02-01'
         }
         required_data = missing_traffic_data.copy()
         required_data.update({
