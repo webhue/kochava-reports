@@ -67,19 +67,14 @@ See here a list of reports fields:
 If you don't have complex code and you are happy waiting until the report is completed you can use this code which does some basic polling:
 
 ```python
-result = client.poll_report(token)
-print result
-```
-
-The above code does simple polling: it waits for 15 seconds and then check the report progress every second. When finished, the report result is returned. These parameters should work most of the time but you can change them like this, if needed:
-
-```python
 result = client.poll_report(token, retry_interval_seconds=1,
                             start_delay_seconds=15, max_retries=30)
 print result
 ```
 
-```max_retries``` parameter (30, by default) is used to avoid infinite loop issues or possible rate-limiting issues. If you expect the report to take a long time to be completed you can set ```start_delay_seconds``` to a higher value.
+The above code does simple polling: it waits for 15 seconds and then checks the report progress every second. When finished, the report result is returned. These are the default parameters and should work fine most of the time.
+
+```max_retries``` parameter is used to avoid infinite loop issues or possible rate-limiting issues. If you expect the report to take a long time to be completed you can set ```start_delay_seconds``` to a higher value.
 
 If the ```max_retries``` limit has been reached a ```kochavareports.exception.PollMaxRetryException``` will be raised.
 
