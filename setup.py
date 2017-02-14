@@ -10,7 +10,7 @@ with open(version_path) as version_file:
 setup_args = dict(
     name='kochava-reports',
     description='Python library to generate reports in the Kochava platform.',
-    url='https://github.com/mbodea/kochava-reports',
+    url='https://github.com/webhue/kochava-reports',
     version=ns['__version__'],
     license='MIT',
     packages=find_packages(),
