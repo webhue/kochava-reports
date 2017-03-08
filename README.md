@@ -67,7 +67,7 @@ See here a list of reports fields:
 If you don't have complex code and you are happy waiting until the report is completed you can use this code which does some basic polling:
 
 ```python
-result = client.poll_report(token, retry_interval_seconds=1,
+result = client.wait_for_report(token, retry_interval_seconds=1,
                             start_delay_seconds=15, max_retries=30)
 print result
 ```

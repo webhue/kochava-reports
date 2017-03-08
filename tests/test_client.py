@@ -75,8 +75,8 @@ class TestClient(unittest2.TestCase):
     @mock.patch('kochavareports.client.time.sleep')
     @mock.patch('kochavareports.client.requests.post')
     @mock.patch('kochavareports.client.Client.get_report_progress')
-    def test_poll_report_max_retries_exceeded(self, mock_progress, mock_post,
-                                              mock_sleep):
+    def test_wait_for_report_max_retries_exceeded(self, mock_progress, mock_post,
+                                                  mock_sleep):
         response_data = {
             'status': 'queued'
         }
@@ -91,7 +91,7 @@ class TestClient(unittest2.TestCase):
         max_retries = 60
 
         with self.assertRaises(exception.PollMaxRetryException):
-            self._make_client().poll_report(
+            self._make_client().wait_for_report(
                 token,
                 retry_interval_seconds=retry_interval_seconds,
                 start_delay_seconds=start_delay_seconds,
@@ -111,7 +111,7 @@ class TestClient(unittest2.TestCase):
     @mock.patch('kochavareports.client.time.sleep')
     @mock.patch('kochavareports.client.Client.read_report')
     @mock.patch('kochavareports.client.Client.get_report_progress')
-    def test_poll_report_success(self, mock_progress, mock_read, mock_sleep):
+    def test_wait_for_report_success(self, mock_progress, mock_read, mock_sleep):
         token = '1234456765'
         response_queued = {
             'status': 'queued'
@@ -133,9 +133,9 @@ class TestClient(unittest2.TestCase):
             [response.GetReportProgressResponse(response_completed)]
         mock_read.return_value = response_result
 
-        result = self._make_client().poll_report(token)
+        result = self._make_client().wait_for_report(token)
 
-        # read_report() result should be the same as poll_report result:
+        # read_report() result should be the same as wait_for_report result:
         self.assertEqual(result, response_result)
 
         # read_report() should be called exactly once with the returned url:
