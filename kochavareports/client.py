@@ -165,8 +165,8 @@ class Client(object):
     def read_report(self, url):
         return self._get_data(url)
 
-    def poll_report(self, token, retry_interval_seconds=1,
-                    start_delay_seconds=15, max_retries=60):
+    def wait_for_report(self, token, retry_interval_seconds=1,
+                        start_delay_seconds=15, max_retries=60):
         if start_delay_seconds:
             time.sleep(start_delay_seconds)
         for x in range(0, max_retries):
