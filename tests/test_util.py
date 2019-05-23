@@ -1,12 +1,12 @@
 from __future__ import absolute_import
 
-import unittest2
+import unittest
 import datetime
 
 from kochavareports import util
 
 
-class TestUtil(unittest2.TestCase):
+class TestUtil(unittest.TestCase):
 
     def test_timezone_timestamp(self):
         timezone = 'US/Pacific'

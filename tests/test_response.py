@@ -1,12 +1,12 @@
 from __future__ import absolute_import
 
-import unittest2
+import unittest
 import datetime
 
 from kochavareports import response, constant, exception
 
 
-class TestResponse(unittest2.TestCase):
+class TestResponse(unittest.TestCase):
 
     def test_response(self):
         with self.assertRaises(ValueError):

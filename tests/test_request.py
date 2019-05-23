@@ -1,13 +1,13 @@
 from __future__ import absolute_import
 
-import unittest2
+import unittest
 
 from kochavareports import request, constant
 from kochavareports import KochavaCredentials
 import six
 
 
-class TestRequest(unittest2.TestCase):
+class TestRequest(unittest.TestCase):
 
     def _make_credentials(self):
         return KochavaCredentials(api_key='api key',
