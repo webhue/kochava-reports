@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from distutils.util import convert_path
 from setuptools import find_packages
 from setuptools import setup

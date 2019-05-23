@@ -1,4 +1,5 @@
-import util
+from __future__ import absolute_import
+from . import util
 from .exception import ApiResponseException, ApiCredentialsException
 
 
