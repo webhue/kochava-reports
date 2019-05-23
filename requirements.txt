@@ -1,3 +1,2 @@
 requests==2.3.0
-nose2
-mock
+nose2==0.9.1
