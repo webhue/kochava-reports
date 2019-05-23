@@ -4,6 +4,7 @@ import unittest2
 
 from kochavareports import request, constant
 from kochavareports import KochavaCredentials
+import six
 
 
 class TestRequest(unittest2.TestCase):
@@ -62,8 +63,8 @@ class TestRequest(unittest2.TestCase):
                                         **required_data)
         for key, value in credentials.to_dict().iteritems():
             self.assertEqual(r.data.get(key), value)
-        self.assertTrue(isinstance(r.data.get('time_start'), basestring))
-        self.assertTrue(isinstance(r.data.get('time_end'), basestring))
+        self.assertTrue(isinstance(r.data.get('time_start'), six.string_types))
+        self.assertTrue(isinstance(r.data.get('time_end'), six.string_types))
         self.assertGreater(r.data.get('time_end'), r.data.get('time_start'))
         self.assertTrue(r.data.get('time_series'))
         self.assertTrue(r.data.get('delivery_method'))
