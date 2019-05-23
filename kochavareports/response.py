@@ -8,7 +8,7 @@ class Response(object):
         if not isinstance(data, dict):
             raise ValueError(
                 "Invalid data returned, it must be a dictionary: " + str(data))
-        if not len(data.keys()):
+        if not data:
             raise ValueError(
                 "Empty data returned: " + str(data))
         self.data = data
