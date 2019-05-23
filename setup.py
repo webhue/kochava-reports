@@ -6,7 +6,7 @@ from io import open
 
 ns = {}
 version_path = convert_path('kochavareports/version.py')
-with open(version_path) as version_file:
+with open(version_path, encoding='utf-8') as version_file:
     exec(version_file.read(), ns)
 
 setup_args = dict(
