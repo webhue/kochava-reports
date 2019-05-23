@@ -22,6 +22,7 @@ class Response(object):
         return str(self.data)
 
     def __unicode__(self):
+        # Note: this method is only called in Python 2
         return unicode(self.data)
 
     def is_error(self):

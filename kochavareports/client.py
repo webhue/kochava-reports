@@ -22,6 +22,7 @@ class Credentials(object):
         return str(self.__dict__)
 
     def __unicode__(self):
+        # Note: this method is only called in Python 2
         return unicode(self.__dict__)
 
     def __repr__(self):
