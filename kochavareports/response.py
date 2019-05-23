@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import six
 from . import util
 from .exception import ApiResponseException, ApiCredentialsException
 
@@ -23,7 +24,7 @@ class Response(object):
 
     def __unicode__(self):
         # Note: this method is only called in Python 2
-        return unicode(self.data)
+        return six.text_type(self.__dict__)
 
     def is_error(self):
         return self.status is None or self.status.lower() == u'error'

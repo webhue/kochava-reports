@@ -2,6 +2,7 @@ from __future__ import absolute_import
 import requests
 import json
 import time
+import six
 
 from .constant import ReportCategory
 from .exception import (
@@ -23,7 +24,7 @@ class Credentials(object):
 
     def __unicode__(self):
         # Note: this method is only called in Python 2
-        return unicode(self.__dict__)
+        return six.text_type(self.__dict__)
 
     def __repr__(self):
         return 'KochavaCredentials(**' + str(self.__dict__) + ')'
