@@ -1,12 +1,13 @@
 from __future__ import absolute_import
 
-import unittest2
+import unittest
 
 from kochavareports import request, constant
 from kochavareports import KochavaCredentials
+import six
 
 
-class TestRequest(unittest2.TestCase):
+class TestRequest(unittest.TestCase):
 
     def _make_credentials(self):
         return KochavaCredentials(api_key='api key',
@@ -19,9 +20,9 @@ class TestRequest(unittest2.TestCase):
         credentials = self._make_credentials()
         data = self._make_data()
         r = request.AuthRequest(credentials, **data)
-        for key, value in data.iteritems():
+        for key, value in data.items():
             self.assertEqual(r.data.get(key), value)
-        for key, value in credentials.to_dict().iteritems():
+        for key, value in credentials.to_dict().items():
             self.assertEqual(r.data.get(key), value)
 
     def test_report_columns_request(self):
@@ -29,7 +30,7 @@ class TestRequest(unittest2.TestCase):
         report = 'install'
         r = request.GetReportColumnsRequest(credentials, report=report)
         self.assertEqual(r.data.get('report'), report)
-        for key, value in credentials.to_dict().iteritems():
+        for key, value in credentials.to_dict().items():
             self.assertEqual(r.data.get(key), value)
 
     def test_create_report_request(self):
@@ -60,10 +61,10 @@ class TestRequest(unittest2.TestCase):
         r = request.CreateReportRequest(credentials,
                                         reportCategory=reportCategory,
                                         **required_data)
-        for key, value in credentials.to_dict().iteritems():
+        for key, value in credentials.to_dict().items():
             self.assertEqual(r.data.get(key), value)
-        self.assertTrue(isinstance(r.data.get('time_start'), basestring))
-        self.assertTrue(isinstance(r.data.get('time_end'), basestring))
+        self.assertTrue(isinstance(r.data.get('time_start'), six.string_types))
+        self.assertTrue(isinstance(r.data.get('time_end'), six.string_types))
         self.assertGreater(r.data.get('time_end'), r.data.get('time_start'))
         self.assertTrue(r.data.get('time_series'))
         self.assertTrue(r.data.get('delivery_method'))
@@ -74,5 +75,5 @@ class TestRequest(unittest2.TestCase):
         token = '1234567890'
         r = request.GetReportProgressRequest(credentials, token=token)
         self.assertEqual(r.data.get('token'), token)
-        for key, value in credentials.to_dict().iteritems():
+        for key, value in credentials.to_dict().items():
             self.assertEqual(r.data.get(key), value)

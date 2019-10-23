@@ -1,5 +1,7 @@
+from __future__ import absolute_import
 import datetime
 import calendar
+import six
 
 
 DATE_FORMAT = '%Y-%m-%d'
@@ -13,7 +15,7 @@ def parse_str_datetime(strdate):
 def get_timestamp(d, timezone=None):
     # tz = pytz.timezone(timezone) if timezone else None
     # timezone is not used atm
-    if isinstance(d, basestring):
+    if isinstance(d, six.string_types):
         if d.isdigit():
             return int(d, 10)
         else:

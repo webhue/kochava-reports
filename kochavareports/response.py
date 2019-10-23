@@ -1,4 +1,6 @@
-import util
+from __future__ import absolute_import
+import six
+from . import util
 from .exception import ApiResponseException, ApiCredentialsException
 
 
@@ -7,7 +9,7 @@ class Response(object):
         if not isinstance(data, dict):
             raise ValueError(
                 "Invalid data returned, it must be a dictionary: " + str(data))
-        if not len(data.keys()):
+        if not data:
             raise ValueError(
                 "Empty data returned: " + str(data))
         self.data = data
@@ -21,7 +23,8 @@ class Response(object):
         return str(self.data)
 
     def __unicode__(self):
-        return unicode(self.data)
+        # Note: this method is only called in Python 2
+        return six.text_type(self.__dict__)
 
     def is_error(self):
         return self.status is None or self.status.lower() == u'error'

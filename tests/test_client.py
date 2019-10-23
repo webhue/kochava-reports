@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-import unittest2
+import unittest
 
 import requests
 import json
@@ -11,7 +11,7 @@ from kochavareports import client, constant, exception, response
 from kochavareports import KochavaCredentials, KochavaClient
 
 
-class TestClient(unittest2.TestCase):
+class TestClient(unittest.TestCase):
 
     TEST_URL = 'http://whatever.url'
     TEST_DATA = {

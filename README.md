@@ -30,7 +30,7 @@ request_data = {
 	'time_series': '1'
 }
 token = client.create_report(**request_data)
-print token
+print(token)
 ```
 
 ```time_start``` and ```time_end``` parameters can be ISO formatted strings, datetime objects or timestamps: they are converted internally to a timestamp, as required by the API.
@@ -53,9 +53,9 @@ Once a report has been queued you can check it's progress at any time. If it's c
 response = client.get_report_progress(token)
 if response.is_completed():
     report_data = client.read_report(response.get_report_url())
-    print report_data
+    print(report_data)
 else:
-    print response.progress
+    print(response.progress)
 ```
 
 See here a list of reports fields:
@@ -69,7 +69,7 @@ If you don't have complex code and you are happy waiting until the report is com
 ```python
 result = client.wait_for_report(token, retry_interval_seconds=1,
                             start_delay_seconds=15, max_retries=30)
-print result
+print(result)
 ```
 
 The above code does simple polling: it waits for 15 seconds and then checks the report progress every second. When finished, the report result is returned. These are the default parameters and should work fine most of the time.
